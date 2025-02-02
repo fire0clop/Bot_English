@@ -54,12 +54,6 @@ def noob_answer(callback_query):
         username=callback_query.from_user.username,
         level="noob",  # Уровень можно задать по умолчанию или спросить у пользователя
     )
-    Word.create(
-        user=new_user,  # Связываем слово с пользователем
-        russian_word="привет",
-        english_word="hi",
-        learned=False  # По умолчанию слово считается не изученным
-    )
 
     print(f"Пользователь добавлен с ID {new_user.id}")
     level_ask_quantity(callback_query)
@@ -86,12 +80,6 @@ def middle_answer(callback_query):
         full_name=callback_query.from_user.full_name,
         username=callback_query.from_user.username,
         level="middle",  # Уровень можно задать по умолчанию или спросить у пользователя
-    )
-    Word.create(
-        user=new_user,  # Связываем слово с пользователем
-        russian_word="привет",
-        english_word="hi",
-        learned=False  # По умолчанию слово считается не изученным
     )
     print(f"Пользователь добавлен с ID {new_user.id}")
     user_id = callback_query.from_user.id
@@ -132,12 +120,6 @@ def profi_answer(callback_query):
         full_name=callback_query.from_user.full_name,
         username=callback_query.from_user.username,
         level="profi",  # Уровень можно задать по умолчанию или спросить у пользователя
-    )
-    Word.create(
-        user=new_user,  # Связываем слово с пользователем
-        russian_word="привет",
-        english_word="hi",
-        learned=False  # По умолчанию слово считается не изученным
     )
     print(f"Пользователь добавлен с ID {new_user.id}")
     level_ask_quantity(callback_query)
