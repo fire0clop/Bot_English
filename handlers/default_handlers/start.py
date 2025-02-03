@@ -82,21 +82,6 @@ def middle_answer(callback_query):
         level="middle",  # Уровень можно задать по умолчанию или спросить у пользователя
     )
     print(f"Пользователь добавлен с ID {new_user.id}")
-    user_id = callback_query.from_user.id
-    user = User.get_or_none(user_id=user_id)
-
-    if user:
-        # Получаем все слова, связанные с этим пользователем
-        words = Word.select().where(Word.user == user)
-        if words.exists():
-            print(f"Слова для пользователя {user.full_name} (ID: {user_id}):")
-            for word in words:
-                print(
-                    f"Русское слово: {word.russian_word}, Английское слово: {word.english_word}, Изучено: {word.learned}")
-        else:
-            print(f"У пользователя {user.full_name} (ID: {user_id}) нет связанных слов.")
-    else:
-        print(f"Пользователь с ID {user_id} не найден.")
     level_ask_quantity(callback_query)
 
 @bot.callback_query_handler(

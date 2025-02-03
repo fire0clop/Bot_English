@@ -1,9 +1,8 @@
 from telebot.types import Message
-
 from loader import bot
 from keyboards.inline.default_inline_keyb import menu_settings
 from handlers.custom_handlers.dictionary import send_words_table
-from api.Cohere_API import *
+from handlers.custom_handlers.generate_new_word import gen_word
 from database.db import User
 @bot.callback_query_handler(
     func=lambda callback_query: (
@@ -48,30 +47,7 @@ def lessons(callback_query):
     )
 )
 def new_word(callback_query):
-    list_words = []
     user = User.get(User.user_id == callback_query.from_user.id)
-    words = user.word
-    for w in words:
-        list_words.append(w.english_word)
+    word_id = gen_word(callback_query, user)
 
-    bot.send_message(
-        callback_query.from_user.id,
-        "Подождите, генерируем слово..."
-    )
-    if user.level == 'noob':
-        print('вызываем апи для нубов')
-        word_new = generate_word(callback_query, words_base = list_words, level = 'A1-A2')
-    elif user.level == 'middle':
-        print('вызываем апи для среднечков')
-        word_new = generate_word(callback_query, words_base = list_words, level = 'B1-B2')
-    elif user.level == 'profi':
-        print('вызываем апи для профи')
-        word_new = generate_word(callback_query, words_base = list_words, level = 'C1-C2')
-    else:
-        print('error')
 
-    bot.send_message(
-        callback_query.from_user.id,
-        f"Новое слово - {word_new} успешно добавлено в словарь. Вот ваш словарь"
-    )
-    send_words_table(callback_query)

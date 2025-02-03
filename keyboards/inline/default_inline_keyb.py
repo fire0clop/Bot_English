@@ -1,4 +1,5 @@
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
+from database.db import Word
 def level_checking(lvl_now = 'no_user'):
     """ инлайн клавиатура проверяющая уровень значний пользователя
     ps реализовать систему перехода с одного уровня на другой, при этом в варианте выбора при переходе не должно быть текущего уровеня"""
@@ -38,7 +39,7 @@ def level_update(lvl_now):
     button_1 = InlineKeyboardButton(text="Начальный", callback_data="noob_up")
     button_2 = InlineKeyboardButton(text="Средний", callback_data="middle_up")
     button_3 = InlineKeyboardButton(text="Продвинутый", callback_data="profi_up")
-    button_4 = InlineKeyboardButton(text="Не хочу менять", callback_data="cancel_up")
+    button_4 = InlineKeyboardButton(text="В настройки", callback_data="cancel_up")
     # Создаём объект клавиатуры, добавляя в него кнопки
     keyboard = InlineKeyboardMarkup()
     if lvl_now == 'noob':
@@ -58,7 +59,7 @@ def quantity_update(qua_now):
     button_1 = InlineKeyboardButton(text="5", callback_data="five_up")
     button_2 = InlineKeyboardButton(text="10", callback_data="ten_up")
     button_3 = InlineKeyboardButton(text="20", callback_data="twenty_up")
-    button_4 = InlineKeyboardButton(text="Не хочу менять", callback_data="cancel_up")
+    button_4 = InlineKeyboardButton(text="В настройки", callback_data="cancel_up")
     # Создаём объект клавиатуры, добавляя в него кнопки
     keyboard = InlineKeyboardMarkup()
     if qua_now == '5':
@@ -74,10 +75,10 @@ def quantity_update(qua_now):
 
 def main_menu():
     """ Инлайн клавиатура главного меню"""
-    button_1 = InlineKeyboardButton(text="К настройкам ️", callback_data="settings")
-    button_2 = InlineKeyboardButton(text="К словарю", callback_data="dictionary")
-    button_3 = InlineKeyboardButton(text="К урокам 🛠️", callback_data="lessons")
-    button_4 = InlineKeyboardButton(text="Добавить слова 🛠️", callback_data="new_word")
+    button_1 = InlineKeyboardButton(text="Настройки ️", callback_data="settings")
+    button_2 = InlineKeyboardButton(text="Словарь", callback_data="dictionary")
+    button_3 = InlineKeyboardButton(text="Уроки 🛠️", callback_data="lessons")
+    button_4 = InlineKeyboardButton(text="Добавить слова", callback_data="new_word")
     # Создаём объект клавиатуры, добавляя в него кнопки
     keyboard = InlineKeyboardMarkup()
     keyboard.add(button_1, button_2, button_3, button_4)
@@ -87,7 +88,14 @@ def menu_settings():
     """Инлайн клавиатура для меню настроек"""
     button_1 = InlineKeyboardButton(text="Изменить уровень", callback_data="change_lvl")
     button_2 = InlineKeyboardButton(text="Изменить количество слов", callback_data="change_quantity_words")
-    button_3 = InlineKeyboardButton(text="Не хочу менять", callback_data="cancel")
+    button_3 = InlineKeyboardButton(text="В меню", callback_data="cancel")
     keyboard = InlineKeyboardMarkup()
     keyboard.add(button_1, button_2, button_3)
+    return keyboard
+
+def ask_learn(word_id):
+    button_1 = InlineKeyboardButton(text="Знаю", callback_data=f"know_{word_id}")
+    button_2 = InlineKeyboardButton(text="Не знаю", callback_data=f"not_know_{word_id}")
+    keyboard = InlineKeyboardMarkup()
+    keyboard.add(button_1, button_2)
     return keyboard

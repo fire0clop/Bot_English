@@ -18,8 +18,6 @@ def level_ask_quantity(callback_query):
     )
 )
 def quantity_five(callback_query):
-    print(callback_query.from_user.id)
-
     """Обновление базы данных с изучением 5 слов"""
     user = User.get(User.user_id == callback_query.from_user.id)  # Получаем объект
     user.word_quantity = 5  # Изменяем поле

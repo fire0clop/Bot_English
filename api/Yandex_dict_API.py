@@ -1,9 +1,9 @@
 import requests
-API_KEY = 'dict.1.1.20250127T010434Z.3f513700d5a50e4a.b05539ec97a8b856de1ebb3f30443b593485da94'
+API_KEY = 'dict.1.1.20250203T002223Z.72ad9c37a7fa5fa5.3e0290bb5a5dee6a7de40dd7b19ce157400e7249'
 def translate_word(word):
-    base_url = 'https://dictionary.yandex.net/api/v1/dicservice.json/lookup?'
+    base_url = 'https://dictionary.yandex.net/api/v1/dicservice.json/lookup'
 
-    response = requests.get(f'{base_url}/lookup', params = {
+    response = requests.get(f'{base_url}', params = {
         'key': API_KEY,
         'lang': 'en-ru',
         'text': word,

@@ -1,1 +1,1 @@
-from . import Cohere_API
+from . import Deepseek_API
