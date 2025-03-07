@@ -1,1 +1,1 @@
-from . import Deepseek_API
+from . import Deepseek_API, random_word, Yandex_dict_API

@@ -26,17 +26,19 @@ class User(Model):
 
 
 class Word(Model):
-    """класс """
+    """Класс, описывающий слова пользователя"""
     id = AutoField()  # Уникальный автоинкрементный ID записи в таблице
-    user = ForeignKeyField(User, backref='word', on_delete='CASCADE')  # Связь с пользователем
+    user = ForeignKeyField(User, backref='words', on_delete='CASCADE')  # Связь с пользователем
     russian_word = CharField()  # Слово на русском
     english_word = CharField()  # Перевод слова на английский
     learned = BooleanField(default=False)  # Флаг, изучено слово или нет
+    score = IntegerField(default=0)  # Баллы за изучение слова (по умолчанию 0)
     added_at = DateTimeField(default=datetime.now)  # Время добавления слова в словарь
 
     class Meta:
         database = db  # Указание базы данных
-        table_name = 'word'  # Имя таблицы в базе данных
+        table_name = 'word'
+
 # Создание таблицы
 def initialize_db():
     db.connect()

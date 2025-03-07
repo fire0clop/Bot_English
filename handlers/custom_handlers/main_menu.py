@@ -1,9 +1,11 @@
-from telebot.types import Message
 from loader import bot
+from handlers.custom_handlers.training_v1 import init_training
 from keyboards.inline.default_inline_keyb import menu_settings
 from handlers.custom_handlers.dictionary import send_words_table
 from handlers.custom_handlers.generate_new_word import gen_word
 from database.db import User
+
+
 @bot.callback_query_handler(
     func=lambda callback_query: (
         callback_query.data  # Обращаемся к callback_data, указанной при создании кнопки.
@@ -37,8 +39,10 @@ def dictionary(callback_query):
     )
 )
 def lessons(callback_query):
-    pass
-    # Логика для отправки к тренировке слов
+    user_id = callback_query.from_user.id
+    init_training(user_id)
+
+
 
 @bot.callback_query_handler(
     func=lambda callback_query: (

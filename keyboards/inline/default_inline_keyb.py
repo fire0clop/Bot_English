@@ -99,3 +99,19 @@ def ask_learn(word_id):
     keyboard = InlineKeyboardMarkup()
     keyboard.add(button_1, button_2)
     return keyboard
+
+
+def generate_options_keyboard(options, correct_word):
+    """
+    Генерирует инлайн-клавиатуру с 4 вариантами ответа.
+    :param options: список из 4 слов (3 случайных + 1 правильное).
+    :param correct_word: правильный ответ.
+    :return: объект InlineKeyboardMarkup.
+    """
+    keyboard = InlineKeyboardMarkup()
+
+    for option in options:
+        # Добавляем callback_data, где first = правильное слово, second = выбранное слово
+        keyboard.add(InlineKeyboardButton(option, callback_data=f"answer:{correct_word}:{option}"))
+
+    return keyboard
