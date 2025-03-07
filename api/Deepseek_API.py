@@ -4,16 +4,24 @@ import requests
 import re
 from openai import OpenAI
 from datetime import datetime
+
 client = OpenAI(
     base_url="https://openrouter.ai/api/v1",
-    api_key="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",
+    api_key="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",
 )
 
 
 def generate_word(callback_query, words_base, level="A1-A2"):
+    """
+    Генерирует новое английское слово, исключая уже известные пользователю.
+
+    :param callback_query: объект запроса от Telegram API
+    :param words_base: список слов, которые уже известны пользователю
+    :param level: уровень сложности (по умолчанию A1-A2)
+    :return: сгенерированное слово на английском и ID пользователя
+    """
     user = User.get(User.user_id == callback_query.from_user.id)
     user_id = user.id
-
     excluded_words = ", ".join(words_base)
 
     messages = [
@@ -34,9 +42,7 @@ def generate_word(callback_query, words_base, level="A1-A2"):
         )
 
         en_word = response.choices[0].message.content.strip().lower()
-
-        # Удаляем LaTeX-обертки, если они есть
-        en_word = re.sub(r"\\boxed\{(.*?)\}", r"\1", en_word)
+        en_word = re.sub(r"\\boxed\{(.*?)\}", r"\1", en_word)  # Удаляем LaTeX-обертки
 
         if not en_word or en_word in words_base:
             return generate_word(callback_query, words_base, level)

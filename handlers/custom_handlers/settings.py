@@ -1,284 +1,128 @@
 from telebot.types import Message
-
-
-
 from loader import bot
 from database.db import User
 from keyboards.inline.default_inline_keyb import menu_settings, main_menu, level_update, quantity_update
 
 
-@bot.callback_query_handler(
-    func=lambda callback_query: (
-            callback_query.data  # Обращаемся к callback_data, указанной при создании кнопки.
-            == "change_lvl"
-    )
-)
+@bot.callback_query_handler(func=lambda callback_query: callback_query.data == "change_lvl")
 def change_lvl(callback_query):
-    old_user = User.get(User.user_id == callback_query.from_user.id)
-    us_lvl = old_user.level
-    if us_lvl == 'noob':
-        bot.send_message(
-            callback_query.from_user.id,
-            "Текущий уровень: Начальный \n На что хочешь изменить его",
-            reply_markup=level_update(us_lvl),  # Отправляем клавиатуру.
-        )
-    elif us_lvl == 'middle':
-        bot.send_message(
-            callback_query.from_user.id,
-            "Текущий уровень: Средний \n На что хочешь изменить его",
-            reply_markup=level_update(us_lvl),  # Отправляем клавиатуру.
-        )
-    else:
-        bot.send_message(
-            callback_query.from_user.id,
-            "Текущий уровень: Продвинутый \n На что хочешь изменить его",
-            reply_markup=level_update(us_lvl),  # Отправляем клавиатуру.
-        )
+    """
+    Обрабатывает запрос на изменение уровня языка.
 
-@bot.callback_query_handler(
-    func=lambda callback_query: (
-        callback_query.data  # Обращаемся к callback_data, указанной при создании кнопки.
-        == "noob_up"
+    :param callback_query: Объект callback-запроса от Telegram API.
+    """
+    user = User.get(User.user_id == callback_query.from_user.id)
+    levels = {
+        'noob': "Начальный",
+        'middle': "Средний",
+        'profi': "Продвинутый"
+    }
+    current_level = levels.get(user.level, "Неизвестный")
+
+    bot.send_message(
+        callback_query.from_user.id,
+        f"Текущий уровень: {current_level} \nНа что хочешь изменить его?",
+        reply_markup=level_update(user.level)
     )
-)
+
+
+def update_level(callback_query, new_level, level_name):
+    """
+    Обновляет уровень языка пользователя.
+
+    :param callback_query: Объект callback-запроса от Telegram API.
+    :param new_level: Новый уровень ('noob', 'middle', 'profi').
+    :param level_name: Название уровня для вывода пользователю.
+    """
+    try:
+        user = User.get(User.user_id == callback_query.from_user.id)
+        user.level = new_level
+        user.save()
+        bot.send_message(callback_query.from_user.id, f"Ваш уровень успешно обновлен на {level_name}")
+    except:
+        bot.send_message(callback_query.from_user.id, "Произошла неизвестная ошибка")
+    finally:
+        bot.send_message(callback_query.from_user.id, "Вернемся в настройки", reply_markup=menu_settings())
+
+
+@bot.callback_query_handler(func=lambda callback_query: callback_query.data == "noob_up")
 def noob_up_answer(callback_query):
-    try:
-        user = User.get(User.user_id == callback_query.from_user.id)
-        user.level = 'noob'
-        user.save()
-        bot.send_message(
-            callback_query.from_user.id,
-            "Ваш уровень успешно обновлен на Начальный",
-              # Отправляем клавиатуру.
-        )
-    except:
-        bot.send_message(
-            callback_query.from_user.id,
-            "Произошла неизвестная ошибка",
-
-        )
-    finally:
-        bot.send_message(
-            callback_query.from_user.id,
-            "Вернемся в настройки",
-            reply_markup=menu_settings(),  # Отправляем клавиатуру.
-        )
+    update_level(callback_query, "noob", "Начальный")
 
 
-@bot.callback_query_handler(
-    func=lambda callback_query: (
-            callback_query.data  # Обращаемся к callback_data, указанной при создании кнопки.
-            == "middle_up"
-    )
-)
+@bot.callback_query_handler(func=lambda callback_query: callback_query.data == "middle_up")
 def middle_up_answer(callback_query):
-    try:
-        user = User.get(User.user_id == callback_query.from_user.id)
-        user.level = 'middle'
-        user.save()
-        bot.send_message(
-            callback_query.from_user.id,
-            "Ваш уровень успешно обновлен на Средний",
-            # Отправляем клавиатуру.
-        )
-    except:
-        bot.send_message(
-            callback_query.from_user.id,
-            "Произошла неизвестная ошибка",
+    update_level(callback_query, "middle", "Средний")
 
-        )
-    finally:
-        bot.send_message(
-            callback_query.from_user.id,
-            "Вернемся в настройки",
-            reply_markup=menu_settings(),  # Отправляем клавиатуру.
-        )
-@bot.callback_query_handler(
-    func=lambda callback_query: (
-            callback_query.data  # Обращаемся к callback_data, указанной при создании кнопки.
-            == "profi_up"
-    )
-)
+
+@bot.callback_query_handler(func=lambda callback_query: callback_query.data == "profi_up")
 def profi_up_answer(callback_query):
-    try:
-        user = User.get(User.user_id == callback_query.from_user.id)
-        user.level = 'profi'
-        user.save()
-        bot.send_message(
-            callback_query.from_user.id,
-            "Ваш уровень успешно обновлен на Продвинутый",
-            # Отправляем клавиатуру.
-        )
-    except:
-        bot.send_message(
-            callback_query.from_user.id,
-            "Произошла неизвестная ошибка",
-
-        )
-    finally:
-        bot.send_message(
-            callback_query.from_user.id,
-            "Вернемся в настройки",
-            reply_markup=menu_settings(),  # Отправляем клавиатуру.
-        )
+    update_level(callback_query, "profi", "Продвинутый")
 
 
-
-
-
-
-
-
-
-
-@bot.callback_query_handler(
-    func=lambda callback_query: (
-            callback_query.data  # Обращаемся к callback_data, указанной при создании кнопки.
-            == "change_quantity_words"
-    )
-)
+@bot.callback_query_handler(func=lambda callback_query: callback_query.data == "change_quantity_words")
 def change_quantity_words(callback_query):
-    old_user = User.get(User.user_id == callback_query.from_user.id)
-    us_qua = old_user.word_quantity
-    if us_qua == 5:
-        bot.send_message(
-            callback_query.from_user.id,
-            "Текущее количество изучаемых слов - 5. \n На что хочешь изменить его",
-            reply_markup=quantity_update(us_qua),  # Отправляем клавиатуру.
-        )
-    elif us_qua == 10:
-        bot.send_message(
-            callback_query.from_user.id,
-            "Текущее количество изучаемых слов - 10. \n На что хочешь изменить его",
-            reply_markup=quantity_update(us_qua),  # Отправляем клавиатуру.
-        )
-    else:
-        bot.send_message(
-            callback_query.from_user.id,
-            "Текущее количество изучаемых слов - 20. \n На что хочешь изменить его",
-            reply_markup=quantity_update(us_qua),  # Отправляем клавиатуру.
-        )
+    """
+    Обрабатывает запрос на изменение количества изучаемых слов.
 
-
-
-
-
-
-@bot.callback_query_handler(
-    func=lambda callback_query: (
-        callback_query.data  # Обращаемся к callback_data, указанной при создании кнопки.
-        == "five_up"
+    :param callback_query: Объект callback-запроса от Telegram API.
+    """
+    user = User.get(User.user_id == callback_query.from_user.id)
+    bot.send_message(
+        callback_query.from_user.id,
+        f"Текущее количество изучаемых слов - {user.word_quantity}.\nНа что хочешь изменить его?",
+        reply_markup=quantity_update(user.word_quantity)
     )
-)
+
+
+def update_word_quantity(callback_query, new_quantity):
+    """
+    Обновляет количество изучаемых слов.
+
+    :param callback_query: Объект callback-запроса от Telegram API.
+    :param new_quantity: Новое количество слов.
+    """
+    try:
+        user = User.get(User.user_id == callback_query.from_user.id)
+        user.word_quantity = new_quantity
+        user.save()
+        bot.send_message(callback_query.from_user.id, f"Количество ваших слов обновлено до {new_quantity}")
+    except:
+        bot.send_message(callback_query.from_user.id, "Произошла неизвестная ошибка")
+    finally:
+        bot.send_message(callback_query.from_user.id, "Вернемся в настройки", reply_markup=menu_settings())
+
+
+@bot.callback_query_handler(func=lambda callback_query: callback_query.data == "five_up")
 def five_up_answer(callback_query):
-    try:
-        user = User.get(User.user_id == callback_query.from_user.id)
-        user.word_quantity = 5
-        user.save()
-        bot.send_message(
-            callback_query.from_user.id,
-            "Количество ваших слов обновлено до 5",
-              # Отправляем клавиатуру.
-        )
-    except:
-        bot.send_message(
-            callback_query.from_user.id,
-            "Произошла неизвестная ошибка",
-
-        )
-    finally:
-        bot.send_message(
-            callback_query.from_user.id,
-            "Вернемся в настройки",
-            reply_markup=menu_settings(),  # Отправляем клавиатуру.
-        )
+    update_word_quantity(callback_query, 5)
 
 
-@bot.callback_query_handler(
-    func=lambda callback_query: (
-            callback_query.data  # Обращаемся к callback_data, указанной при создании кнопки.
-            == "ten_up"
-    )
-)
+@bot.callback_query_handler(func=lambda callback_query: callback_query.data == "ten_up")
 def ten_up_answer(callback_query):
-    try:
-        user = User.get(User.user_id == callback_query.from_user.id)
-        user.word_quantity = 10
-        user.save()
-        bot.send_message(
-            callback_query.from_user.id,
-            "Количество ваших слов обновлено до 10",
-            # Отправляем клавиатуру.
-        )
-    except:
-        bot.send_message(
-            callback_query.from_user.id,
-            "Произошла неизвестная ошибка",
+    update_word_quantity(callback_query, 10)
 
-        )
-    finally:
-        bot.send_message(
-            callback_query.from_user.id,
-            "Вернемся в настройки",
-            reply_markup=menu_settings(),  # Отправляем клавиатуру.
-        )
-@bot.callback_query_handler(
-    func=lambda callback_query: (
-            callback_query.data  # Обращаемся к callback_data, указанной при создании кнопки.
-            == "twenty_up"
-    )
-)
+
+@bot.callback_query_handler(func=lambda callback_query: callback_query.data == "twenty_up")
 def twenty_up_answer(callback_query):
-    try:
-        user = User.get(User.user_id == callback_query.from_user.id)
-        user.word_quantity = 20
-        user.save()
-        bot.send_message(
-            callback_query.from_user.id,
-            "Количество ваших слов обновлено до 20",
-            # Отправляем клавиатуру.
-        )
-    except:
-        bot.send_message(
-            callback_query.from_user.id,
-            "Произошла неизвестная ошибка",
-
-        )
-    finally:
-        bot.send_message(
-            callback_query.from_user.id,
-            "Вернемся в настройки",
-            reply_markup=menu_settings(),
-        )# Отправляем клавиатуру.
+    update_word_quantity(callback_query, 20)
 
 
-
-
-
-
-
-
-@bot.callback_query_handler(
-    func=lambda callback_query: (
-            callback_query.data  # Обращаемся к callback_data, указанной при создании кнопки.
-            == "cancel_up"
-    )
-)
+@bot.callback_query_handler(func=lambda callback_query: callback_query.data == "cancel_up")
 def cancel_up_answer(callback_query):
-    bot.send_message(
-        callback_query.from_user.id,
-        "Вернемся в настройки",
-        reply_markup=menu_settings(),  # Отправляем клавиатуру.
-    )
-@bot.callback_query_handler(
-    func=lambda callback_query: (
-            callback_query.data  # Обращаемся к callback_data, указанной при создании кнопки.
-            == "cancel"
-    )
-)
+    """
+    Возвращает пользователя в меню настроек.
+
+    :param callback_query: Объект callback-запроса от Telegram API.
+    """
+    bot.send_message(callback_query.from_user.id, "Вернемся в настройки", reply_markup=menu_settings())
+
+
+@bot.callback_query_handler(func=lambda callback_query: callback_query.data == "cancel")
 def cancel_answer(callback_query):
-    bot.send_message(
-        callback_query.from_user.id,
-        "Вернемся в меню",
-        reply_markup=main_menu(),  # Отправляем клавиатуру.
-    )
+    """
+    Возвращает пользователя в главное меню.
+
+    :param callback_query: Объект callback-запроса от Telegram API.
+    """
+    bot.send_message(callback_query.from_user.id, "Вернемся в меню", reply_markup=main_menu())

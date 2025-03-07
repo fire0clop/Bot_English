@@ -5,53 +5,44 @@ from handlers.custom_handlers.dictionary import send_words_table
 from handlers.custom_handlers.generate_new_word import gen_word
 from database.db import User
 
-
-@bot.callback_query_handler(
-    func=lambda callback_query: (
-        callback_query.data  # Обращаемся к callback_data, указанной при создании кнопки.
-        == "settings"
-    )
-)
+@bot.callback_query_handler(func=lambda callback_query: callback_query.data == "settings")
 def settings(callback_query):
+    """
+    Отправляет пользователю меню настроек.
+
+    :param callback_query: Объект callback-запроса от Telegram API.
+    """
     bot.send_message(
         callback_query.from_user.id,
         "Вот твои настроечки",
-        reply_markup=menu_settings(),  # Отправляем клавиатуру.
+        reply_markup=menu_settings()
     )
-    # Логика для настроек уровня и количества слов
 
-@bot.callback_query_handler(
-    func=lambda callback_query: (
-            callback_query.data  # Обращаемся к callback_data, указанной при создании кнопки.
-            == "dictionary"
-    )
-)
+@bot.callback_query_handler(func=lambda callback_query: callback_query.data == "dictionary")
 def dictionary(callback_query):
+    """
+    Отправляет пользователю список его слов.
+
+    :param callback_query: Объект callback-запроса от Telegram API.
+    """
     send_words_table(callback_query)
-    # Логика для вывода таблицы типа
-    # английское слово | перевод на русский | Выучено или нет
 
-
-@bot.callback_query_handler(
-    func=lambda callback_query: (
-            callback_query.data  # Обращаемся к callback_data, указанной при создании кнопки.
-            == "lessons"
-    )
-)
+@bot.callback_query_handler(func=lambda callback_query: callback_query.data == "lessons")
 def lessons(callback_query):
+    """
+    Запускает тренировку слов для пользователя.
+
+    :param callback_query: Объект callback-запроса от Telegram API.
+    """
     user_id = callback_query.from_user.id
     init_training(user_id)
 
-
-
-@bot.callback_query_handler(
-    func=lambda callback_query: (
-            callback_query.data  # Обращаемся к callback_data, указанной при создании кнопки.
-            == "new_word"
-    )
-)
+@bot.callback_query_handler(func=lambda callback_query: callback_query.data == "new_word")
 def new_word(callback_query):
+    """
+    Генерирует новое слово для пользователя.
+
+    :param callback_query: Объект callback-запроса от Telegram API.
+    """
     user = User.get(User.user_id == callback_query.from_user.id)
-    word_id = gen_word(callback_query, user)
-
-
+    gen_word(callback_query, user)
